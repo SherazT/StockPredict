@@ -1,6 +1,9 @@
 import pandas as pd
 import quandl
 import math
+import numpy as np
+from sklearn import preprocessing, model_selection, svm
+from sklearn.linear_model import LinearRegression
 
 df = quandl.get('WIKI/GOOGL')
 
@@ -19,6 +22,14 @@ df.fillna(-99999, inplace=True) #replace NaN values with a really small number t
 
 forecast_offset = int(math.ceil(0.01*len(df))) #predict 10% of dataframe
 
-df['prediction'] = df[forecast_column].shift(-forecast_offset) #initilize prediction column with data from 10% days ago
 
-print(df.head())
+df['prediction_for_10_days_after'] = df[forecast_column].shift(-forecast_offset) #initilize prediction column by shifting Adj. Close column 10% up
+
+df.dropna(inplace=True)
+
+#features
+X = np.array(df.drop(['prediction_for_10_days_after'], axis=1)) #convert to numpy array and drop prediction column 
+
+#predictions/labels
+y = np.array(df['prediction_for_10_days_after'])
+
