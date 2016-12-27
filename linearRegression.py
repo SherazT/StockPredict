@@ -33,3 +33,19 @@ X = np.array(df.drop(['prediction_for_10_days_after'], axis=1)) #convert to nump
 #predictions/labels
 y = np.array(df['prediction_for_10_days_after'])
 
+#normalize features
+X = preprocessing.scale(X)
+
+df.dropna(inplace=True)
+print(len(X), len(y))
+
+
+#setup training and testing sets
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
+
+#setup classifer 
+classifer = LinearRegression()
+classifer.fit(X_train, y_train) #run gradient decent and fit parameters 
+accuracy = classifer.score(X_test, y_test)
+
+print(accuracy)
