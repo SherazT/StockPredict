@@ -39,10 +39,14 @@ X = X[:-forecast_offset:] #holds all the inputs where there is a prediction (jus
 #pdb.set_trace() #byebug sub for python
 
 
-df.dropna(inplace=True) #X no longer contains rows that X_lately has 
+#df.dropna(inplace=True) #X no longer contains rows that X_lately has 
 
 #predictions/labels
 y = np.array(df['prediction_for_10_days_after'])
+#sheraz = y[-forecast_offset:] 
+y = y[:-forecast_offset:] 
+
+#pdb.set_trace() #byebug sub for python
 
 #setup training and testing sets
 X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
@@ -57,15 +61,26 @@ forecast_set = classifer.predict(X_lately) #based on these inputs X, find y. cur
 #print(forecast_set, accuracy, forecast_offset)
 
 df['Forecast'] = np.nan #empty column
+#pdb.set_trace() #byebug sub for python
 
 last_date = df.iloc[-1].name #last date in dataframe (one of the dates that was predicted in line 55)
 last_unix = time.mktime(last_date.to_pydatetime().timetuple())	#unix timestamp of the last date 
 one_day = 86400	#no of seconds in a day
-next_unix = last_unix + one_day	
+next_unix = last_unix 
 
-pdb.set_trace()
+#pdb.set_trace()
 
 for i in forecast_set:
     next_date = datetime.datetime.fromtimestamp(next_unix)
     next_unix += 86400
     df.loc[next_date] = [np.nan for _ in range(len(df.columns)-1)]+[i]
+
+print(y[-32:] ,forecast_set, accuracy, forecast_offset) #output actual results from 32 days ago and current predictions to make a comparision
+
+
+df['Adj. Close'].plot()
+df['Forecast'].plot()
+plt.legend(loc=4)
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.show()
